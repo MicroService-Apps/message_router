@@ -20,15 +20,16 @@ amqp.connect('amqp://localhost').then(function(conn) {
         });
 
         function reply(msg) {
-
-            var response = studentHandler.handleMsg(msg);
-
-            console.log(msg.content.toString());
-            ch.sendToQueue(msg.properties.replyTo,
-                new Buffer(JSON.stringify(response)),
-                {correlationId: msg.properties.correlationId,
-                    contentType:CONTENT_TYPE});
-            ch.ack(msg);
+            studentHandler.handleMsg(msg,ch,sendBack);
         }
     });
 }).then(null, console.warn);
+
+
+function sendBack(msg, ch, response) {
+    ch.sendToQueue(msg.properties.replyTo,
+        new Buffer(JSON.stringify(response)),
+        {correlationId: msg.properties.correlationId,
+            contentType:CONTENT_TYPE});
+    ch.ack(msg);
+}

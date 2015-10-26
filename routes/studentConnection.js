@@ -26,6 +26,10 @@ exports.execute = function(req, res) {
             handleDelete(body, res);
 
             break;
+        case 'revert':
+            handleRevert(body, res);
+
+            break;
         case 'config':
             handleConfig(body, res);
 
@@ -86,13 +90,33 @@ function handleUpdate(body, res) {
             else
                 console.error(err);
         }
-        else
+        else{
             console.log("response", response);
+            res.send(response);
+        }
     });
 }
 
 // handle delete method
 function handleDelete(body, res) {
+    sendToCourse(body, function response(err, response){
+        if(err) {
+            if(err.code == 'ECONNRESET') {
+                //handle the reponse timeout
+                console.error('response timeout');
+            }
+            else
+                console.error(err);
+        }
+        else {
+            console.log("response", response);
+            res.send(response);
+        }
+    });
+}
+
+// handle revert method
+function handleRevert(body, res) {
     sendToCourse(body, function response(err, response){
         if(err) {
             if(err.code == 'ECONNRESET') {
